@@ -7,7 +7,11 @@ class UserRepository {
     }
 
     public findById = async (id: string): Promise<IUser | null> => {
-        return await UserModel.findOne({_id: id})
+        return await UserModel.findOne({_id: id});
+    }
+
+    public findByEmail = async (email: string): Promise<IUser | null> => {
+        return await UserModel.findOne({email});
     }
 
     public create = async (user: Omit<IUser, "_id">): Promise<IUser> => {
@@ -15,7 +19,7 @@ class UserRepository {
     }
 
     public updateById = async (id: string, data: Partial<IUser>): Promise<IUser | null> => {
-        return await UserModel.findOneAndUpdate({_id: id}, {...data}, {returnDocument: 'after'})
+        return await UserModel.findOneAndUpdate({_id: id}, {...data}, {returnDocument: 'after'});
     }
 
     public deleteById = async (id: string): Promise<IUser | null> => {

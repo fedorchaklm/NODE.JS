@@ -15,6 +15,10 @@ class UserService {
         return user;
     }
 
+    public findByEmail = async (email: string): Promise<IUser | null> => {
+        return await userRepository.findByEmail(email);
+    }
+
     public create = async (user: Omit<IUser, "_id">): Promise<IUser> => {
         return await userRepository.create(user);
     }
