@@ -7,4 +7,5 @@ export const errorHandler = (e: ApiError, _: Request, res: Response, next: NextF
     res.status(status).json({
         message: e.message,
     });
+    return;
 }
