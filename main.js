@@ -1,8 +1,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 
-const readStream = fs.createReadStream('emails.txt');
-const writeStream = fs.createWriteStream('gmail.txt');
+const filePath = path.join(process.cwd(), 'emails.txt');
+const targetPath = path.join(process.cwd(), 'gmail.txt');
+
+const readStream = fs.createReadStream(filePath);
+const writeStream = fs.createWriteStream(targetPath);
 
 readStream.on('data', (chunk) => {
     const data = chunk.toString().split('\n');
