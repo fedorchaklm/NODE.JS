@@ -18,24 +18,32 @@ class UserController {
         }
     };
 
-    public getById = async (req: Request, res: Response<IUser | null>) => {
-        const { id } = req.params;
-        const user = await userService.getById(id);
-        res.status(StatusCodesEnum.OK).json(user);
-    };
-
-    public create = async (
+    public getById = async (
         req: Request,
         res: Response<IUser | null>,
         next: NextFunction,
     ) => {
         try {
-            const user = await userService.create(req.body);
-            res.status(StatusCodesEnum.CREATED).json(user);
+            const { id } = req.params;
+            const user = await userService.getById(id);
+            res.status(StatusCodesEnum.OK).json(user);
         } catch (e) {
             next(e);
         }
     };
+
+    // public create = async (
+    //     req: Request,
+    //     res: Response<IUser | null>,
+    //     next: NextFunction,
+    // ) => {
+    //     try {
+    //         const user = await userService.create(req.body);
+    //         res.status(StatusCodesEnum.CREATED).json(user);
+    //     } catch (e) {
+    //         next(e);
+    //     }
+    // };
 
     public updateById = async (
         req: Request,
