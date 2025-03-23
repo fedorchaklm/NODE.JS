@@ -15,7 +15,7 @@ class AuthService {
         const password = await passwordService.hashPassword(user.password);
         const newUser = await userService.create({ ...user, password });
         const tokens = tokenService.generateTokens({
-            id: newUser._id,
+            userId: newUser._id,
             role: newUser.role as RoleEnum,
         });
         await tokenRepository.create({ ...tokens, _userId: newUser._id });
@@ -45,7 +45,7 @@ class AuthService {
         }
 
         const tokens = tokenService.generateTokens({
-            id: user._id,
+            userId: user._id,
             role: user.role as RoleEnum,
         });
         await tokenRepository.create({ ...tokens, _userId: user._id });
