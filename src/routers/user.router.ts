@@ -21,6 +21,23 @@ router.put(
     authMiddleware.checkAccessToken,
     userController.updateById,
 );
+
+router.patch(
+    "/:id/block",
+    commonMiddleware.isValidId("id"),
+    authMiddleware.checkAccessToken,
+    authMiddleware.isAdmin,
+    userController.blockUser,
+);
+
+router.patch(
+    "/:id/unblock",
+    commonMiddleware.isValidId("id"),
+    authMiddleware.checkAccessToken,
+    authMiddleware.isAdmin,
+    userController.unBlockUser,
+);
+
 router.delete(
     "/:id",
     commonMiddleware.isValidId("id"),

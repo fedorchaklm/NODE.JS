@@ -44,6 +44,13 @@ class AuthService {
             );
         }
 
+        if (!user.isActive) {
+            throw new ApiError(
+                "Account is not active",
+                StatusCodesEnum.FORBIDDEN,
+            );
+        }
+
         const tokens = tokenService.generateTokens({
             userId: user._id,
             role: user.role as RoleEnum,

@@ -12,6 +12,7 @@ export interface IUser extends IBase {
     updatedAt: string;
     isDeleted: boolean;
     isVerified: boolean;
+    isActive: boolean;
 }
 
 export type IUserCreateDTO = Pick<

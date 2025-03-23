@@ -13,6 +13,11 @@ export interface ITokenPayload {
     role: RoleEnum;
 }
 
+export type ITokenModel = Pick<
+    IToken,
+    "accessToken" | "refreshToken" | "_userId"
+>;
+
 export interface ITokenPair {
     accessToken: string;
     refreshToken: string;

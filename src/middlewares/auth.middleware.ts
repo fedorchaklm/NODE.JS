@@ -1,8 +1,11 @@
 import { NextFunction, Request, Response } from "express";
 
+import { RoleEnum } from "../enums/role.enum";
 import { StatusCodesEnum } from "../enums/status.codes.enum";
 import { ApiError } from "../errors/api.error";
+import { ITokenPayload } from "../interfaces/token.interface";
 import { tokenService } from "../services/token.service";
+import { userService } from "../services/user.service";
 
 class AuthMiddleware {
     public checkAccessToken = async (
@@ -45,6 +48,14 @@ class AuthMiddleware {
                 "accessToken",
             );
 
+            const isActive = await userService.isActive(tokenPayload.userId);
+
+            if (!isActive) {
+                throw new ApiError(
+                    "Account is not active",
+                    StatusCodesEnum.FORBIDDEN,
+                );
+            }
             // req.res.locals.tokenPayload = tokenPayload;
             res.locals.tokenPayload = tokenPayload;
 
@@ -54,7 +65,7 @@ class AuthMiddleware {
         }
     };
 
-    public checkrefreshToken = async (
+    public checkRefreshToken = async (
         req: Request,
         res: Response,
         next: NextFunction,
@@ -94,6 +105,22 @@ class AuthMiddleware {
             next(e);
         }
     };
+
+    public isAdmin(_: Request, res: Response, next: NextFunction) {
+        try {
+            const { role } = res.locals.tokenPayload as ITokenPayload;
+
+            if (role !== RoleEnum.ADMIN) {
+                throw new ApiError(
+                    "No has permissions",
+                    StatusCodesEnum.FORBIDDEN,
+                );
+            }
+            next();
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 export const authMiddleware = new AuthMiddleware();

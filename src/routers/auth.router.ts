@@ -19,7 +19,7 @@ router.get("/me", authMiddleware.checkAccessToken, authController.me);
 router.post(
     "/refresh",
     commonMiddleware.validateBody(AuthValidator.refresh),
-    authMiddleware.checkrefreshToken,
+    authMiddleware.checkRefreshToken,
     authController.refresh,
 );
 export const authRouter = router;
