@@ -1,7 +1,9 @@
 import jwt from "jsonwebtoken";
 
 import { config } from "../config/config";
+import { ActionTokenEnum } from "../enums/action.token.enum";
 import { StatusCodesEnum } from "../enums/status.codes.enum";
+import { TokenEnum } from "../enums/token.enum";
 import { ApiError } from "../errors/api.error";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import { tokenRepository } from "../repositories/token.repository";
@@ -19,17 +21,23 @@ class TokenService {
 
     public verifyToken = (
         token: string,
-        type: "accessToken" | "refreshToken",
+        type: TokenEnum | ActionTokenEnum,
     ): ITokenPayload => {
         try {
             let secret;
 
             switch (type) {
-                case "accessToken":
+                case TokenEnum.ACCESS:
                     secret = config.JWT_ACCESS_SECRET;
                     break;
-                case "refreshToken":
+                case TokenEnum.REFRESH:
                     secret = config.JWT_REFRESH_SECRET;
+                    break;
+                case ActionTokenEnum.ACTIVATE:
+                    secret = config.JWT_ACTIVATE_SECRET;
+                    break;
+                case ActionTokenEnum.RECOVERY:
+                    secret = config.JWT_RECOVERY_SECRET;
                     break;
                 default:
                     throw new ApiError(
@@ -47,12 +55,40 @@ class TokenService {
 
     public isTokenExist = async (
         token: string,
-        type: "accessToken" | "refreshToken",
+        type: TokenEnum,
     ): Promise<boolean> => {
         const iTokenPromise = await tokenRepository.findByParams({
             [type]: token,
         });
         return !!iTokenPromise;
+    };
+
+    public generateActionToken = (
+        payload: ITokenPayload,
+        type: ActionTokenEnum,
+    ): string => {
+        let secret;
+        let expiresIn;
+
+        switch (type) {
+            case ActionTokenEnum.ACTIVATE:
+                secret = config.JWT_ACTIVATE_SECRET;
+                expiresIn = config.JWT_ACTIVATE_LIFETIME;
+                break;
+
+            case ActionTokenEnum.RECOVERY:
+                secret = config.JWT_RECOVERY_SECRET;
+                expiresIn = config.JWT_RECOVERY_LIFETIME;
+                break;
+
+            default:
+                throw new ApiError(
+                    "Invalid action token type",
+                    StatusCodesEnum.BAD_REQUEST,
+                );
+        }
+
+        return jwt.sign(payload, secret, { expiresIn });
     };
 }
 

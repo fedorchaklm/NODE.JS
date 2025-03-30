@@ -1,10 +1,15 @@
+import { config } from "../config/config";
+import { emailConstants } from "../constants/email.constatnts";
+import { ActionTokenEnum } from "../enums/action.token.enum";
+import { EmailEnum } from "../enums/email.enum";
 import { RoleEnum } from "../enums/role.enum";
 import { StatusCodesEnum } from "../enums/status.codes.enum";
 import { ApiError } from "../errors/api.error";
 import { IAuth } from "../interfaces/auth.interface";
-import { IUserCreateDTO } from "../interfaces/user.interface";
+import { IUser, IUserCreateDTO } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
 import { userRepository } from "../repositories/user.repository";
+import { emailService } from "./email.service";
 import { passwordService } from "./password.service";
 import { tokenService } from "./token.service";
 import { userService } from "./user.service";
@@ -19,6 +24,21 @@ class AuthService {
             role: newUser.role as RoleEnum,
         });
         await tokenRepository.create({ ...tokens, _userId: newUser._id });
+        const token = tokenService.generateActionToken(
+            {
+                userId: newUser._id,
+                role: newUser.role as RoleEnum,
+            },
+            ActionTokenEnum.ACTIVATE,
+        );
+        await emailService.sendEmail(
+            newUser.email,
+            emailConstants[EmailEnum.ACTIVATE],
+            {
+                name: newUser.name,
+                url: `${config.FRONTEND_URL}/activate/${token}`,
+            },
+        );
         return { user: newUser, tokens };
     };
 
@@ -57,6 +77,45 @@ class AuthService {
         });
         await tokenRepository.create({ ...tokens, _userId: user._id });
         return { user, tokens };
+    };
+
+    public activate = async (token: string) => {
+        const { userId } = tokenService.verifyToken(
+            token,
+            ActionTokenEnum.ACTIVATE,
+        );
+
+        return await userService.partialUpdateById(userId, { isActive: true });
+    };
+
+    public passwordRecoveryRequest = async (user: IUser): Promise<void> => {
+        const token = tokenService.generateActionToken(
+            {
+                userId: user._id,
+                role: user.role as RoleEnum,
+            },
+            ActionTokenEnum.RECOVERY,
+        );
+        await emailService.sendEmail(
+            user.email,
+            emailConstants[EmailEnum.RECOVERY],
+            { url: `${config.FRONTEND_URL}/recovery/${token}` },
+        );
+    };
+
+    public recoveryPassword = async (
+        token: string,
+        password: string,
+    ): Promise<IUser> => {
+        const { userId } = tokenService.verifyToken(
+            token,
+            ActionTokenEnum.RECOVERY,
+        );
+
+        const hashedPassword = await passwordService.hashPassword(password);
+        return await userService.partialUpdateById(userId, {
+            password: hashedPassword,
+        });
     };
 }
 

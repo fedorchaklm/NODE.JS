@@ -35,6 +35,22 @@ class UserService {
         return await userRepository.updateById(id, user);
     };
 
+    public partialUpdateById = async (
+        id: string,
+        user: Partial<IUser>,
+    ): Promise<IUser> => {
+        const data = await userRepository.getById(id);
+        if (data === null) {
+            throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
+        }
+
+        const updatedUser = await userRepository.partialUpdateById(id, user);
+        if (updatedUser === null) {
+            throw new ApiError("User not found", StatusCodesEnum.NOT_FOUND);
+        }
+        return updatedUser;
+    };
+
     public blockUser = async (id: string): Promise<IUser | null> => {
         const user = await userRepository.getById(id);
         if (user === null) {
@@ -73,6 +89,10 @@ class UserService {
     public isActive = async (id: string): Promise<boolean> => {
         const user = await this.getById(id);
         return user.isActive;
+    };
+
+    public getByEmail = async (email: string): Promise<IUser | null> => {
+        return await userRepository.findByEmail(email);
     };
 }
 
