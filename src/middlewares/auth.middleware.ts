@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { RoleEnum } from "../enums/role.enum";
 import { StatusCodesEnum } from "../enums/status.codes.enum";
-import { TokenEnum } from "../enums/token.enum";
+import { TokenEnum } from "../enums/token-type.enum";
 import { ApiError } from "../errors/api.error";
 import { ITokenPayload } from "../interfaces/token.interface";
 import { tokenService } from "../services/token.service";

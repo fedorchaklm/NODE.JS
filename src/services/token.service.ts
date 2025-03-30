@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
 
 import { config } from "../config/config";
-import { ActionTokenEnum } from "../enums/action.token.enum";
+import { ActionTokenTypeEnum } from "../enums/action-token-type.enum";
 import { StatusCodesEnum } from "../enums/status.codes.enum";
-import { TokenEnum } from "../enums/token.enum";
+import { TokenTypeEnum } from "../enums/token-type.enum";
 import { ApiError } from "../errors/api.error";
 import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import { tokenRepository } from "../repositories/token.repository";
@@ -21,22 +21,22 @@ class TokenService {
 
     public verifyToken = (
         token: string,
-        type: TokenEnum | ActionTokenEnum,
+        type: TokenTypeEnum | ActionTokenTypeEnum,
     ): ITokenPayload => {
         try {
             let secret;
 
             switch (type) {
-                case TokenEnum.ACCESS:
+                case TokenTypeEnum.ACCESS:
                     secret = config.JWT_ACCESS_SECRET;
                     break;
-                case TokenEnum.REFRESH:
+                case TokenTypeEnum.REFRESH:
                     secret = config.JWT_REFRESH_SECRET;
                     break;
-                case ActionTokenEnum.ACTIVATE:
+                case ActionTokenTypeEnum.ACTIVATE:
                     secret = config.JWT_ACTIVATE_SECRET;
                     break;
-                case ActionTokenEnum.RECOVERY:
+                case ActionTokenTypeEnum.RECOVERY:
                     secret = config.JWT_RECOVERY_SECRET;
                     break;
                 default:
@@ -55,7 +55,7 @@ class TokenService {
 
     public isTokenExist = async (
         token: string,
-        type: TokenEnum,
+        type: TokenTypeEnum,
     ): Promise<boolean> => {
         const iTokenPromise = await tokenRepository.findByParams({
             [type]: token,
@@ -65,18 +65,18 @@ class TokenService {
 
     public generateActionToken = (
         payload: ITokenPayload,
-        type: ActionTokenEnum,
+        type: ActionTokenTypeEnum,
     ): string => {
         let secret;
         let expiresIn;
 
         switch (type) {
-            case ActionTokenEnum.ACTIVATE:
+            case ActionTokenTypeEnum.ACTIVATE:
                 secret = config.JWT_ACTIVATE_SECRET;
                 expiresIn = config.JWT_ACTIVATE_LIFETIME;
                 break;
 
-            case ActionTokenEnum.RECOVERY:
+            case ActionTokenTypeEnum.RECOVERY:
                 secret = config.JWT_RECOVERY_SECRET;
                 expiresIn = config.JWT_RECOVERY_LIFETIME;
                 break;

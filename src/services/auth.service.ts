@@ -1,6 +1,6 @@
 import { config } from "../config/config";
 import { emailConstants } from "../constants/email.constatnts";
-import { ActionTokenEnum } from "../enums/action.token.enum";
+import { ActionTokenTypeEnum } from "../enums/action-token-type.enum";
 import { EmailEnum } from "../enums/email.enum";
 import { RoleEnum } from "../enums/role.enum";
 import { StatusCodesEnum } from "../enums/status.codes.enum";
@@ -29,7 +29,7 @@ class AuthService {
                 userId: newUser._id,
                 role: newUser.role as RoleEnum,
             },
-            ActionTokenEnum.ACTIVATE,
+            ActionTokenTypeEnum.ACTIVATE,
         );
         await emailService.sendEmail(
             newUser.email,
@@ -82,7 +82,7 @@ class AuthService {
     public activate = async (token: string) => {
         const { userId } = tokenService.verifyToken(
             token,
-            ActionTokenEnum.ACTIVATE,
+            ActionTokenTypeEnum.ACTIVATE,
         );
 
         return await userService.partialUpdateById(userId, { isActive: true });
@@ -94,7 +94,7 @@ class AuthService {
                 userId: user._id,
                 role: user.role as RoleEnum,
             },
-            ActionTokenEnum.RECOVERY,
+            ActionTokenTypeEnum.RECOVERY,
         );
         await emailService.sendEmail(
             user.email,
@@ -109,7 +109,7 @@ class AuthService {
     ): Promise<IUser> => {
         const { userId } = tokenService.verifyToken(
             token,
-            ActionTokenEnum.RECOVERY,
+            ActionTokenTypeEnum.RECOVERY,
         );
 
         const hashedPassword = await passwordService.hashPassword(password);
