@@ -2,7 +2,7 @@ import { NextFunction, Request, Response } from "express";
 
 import { RoleEnum } from "../enums/role.enum";
 import { StatusCodesEnum } from "../enums/status.codes.enum";
-import { TokenEnum } from "../enums/token-type.enum";
+import { TokenTypeEnum } from "../enums/token-type.enum";
 import { ApiError } from "../errors/api.error";
 import { ITokenPayload } from "../interfaces/token.interface";
 import { tokenService } from "../services/token.service";
@@ -34,7 +34,7 @@ class AuthMiddleware {
             }
             const isTokenExist = await tokenService.isTokenExist(
                 accessToken,
-                TokenEnum.ACCESS,
+                TokenTypeEnum.ACCESS,
             );
 
             if (!isTokenExist) {
@@ -46,7 +46,7 @@ class AuthMiddleware {
 
             const tokenPayload = tokenService.verifyToken(
                 accessToken,
-                TokenEnum.ACCESS,
+                TokenTypeEnum.ACCESS,
             );
 
             const isActive = await userService.isActive(tokenPayload.userId);
@@ -57,8 +57,10 @@ class AuthMiddleware {
                     StatusCodesEnum.FORBIDDEN,
                 );
             }
-            // req.res.locals.tokenPayload = tokenPayload;
-            res.locals.tokenPayload = tokenPayload;
+            if (req?.res?.locals != null) {
+                req.res.locals.tokenPayload = tokenPayload;
+            }
+            // res.locals.tokenPayload = tokenPayload;
 
             next();
         } catch (e) {
@@ -83,7 +85,7 @@ class AuthMiddleware {
 
             const isTokenExist = await tokenService.isTokenExist(
                 refreshToken,
-                TokenEnum.REFRESH,
+                TokenTypeEnum.REFRESH,
             );
 
             if (!isTokenExist) {
@@ -95,11 +97,13 @@ class AuthMiddleware {
 
             const tokenPayload = tokenService.verifyToken(
                 refreshToken,
-                TokenEnum.ACCESS,
+                TokenTypeEnum.ACCESS,
             );
 
-            // req.res.locals.tokenPayload = tokenPayload;
-            res.locals.tokenPayload = tokenPayload;
+            if (req.res?.locals != null) {
+                req.res.locals.tokenPayload = tokenPayload;
+            }
+            // res.locals.tokenPayload = tokenPayload;
 
             next();
         } catch (e) {
