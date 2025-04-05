@@ -18,7 +18,7 @@ const UserSchema = new Schema(
         age: { type: String, required: true },
         isDeleted: { type: Boolean, default: false },
         IsVerified: { type: Boolean, default: false },
-        isActive: { type: Boolean, default: false },
+        isActive: { type: Boolean, default: true },
     },
     { timestamps: true, versionKey: false },
 );
