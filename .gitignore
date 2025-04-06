@@ -4,3 +4,6 @@ NODE.JS.iml
 
 /dist/
 .env
+/client/
+/backend/dist/
+/mongo_db/
