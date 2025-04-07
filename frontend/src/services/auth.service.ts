@@ -18,28 +18,45 @@ export const authService = {
         return axiosInstance.get<IUser>(urls.auth.me);
     },
 
-    async login (user: IAuth)  {
-        const {data} = await axiosInstance.post<IUserWithTokens>(urls.auth.login, user);
-        setTokens(data);
-        const {data: my} = await this.me();
-        return my;
+    async login(user: IAuth): Promise<IUser> {
+        console.log({user}, "!!!!!!!!!!!!!!!!!!!!!!!");
+        const {data} = await axiosInstance.post<ITokens>(urls.auth.login, user);
+        console.log({data}, "!!!!!!!!!!!!!!!!!!!!!!!");
+        this.setTokens(data);
+        const {data: me} = await this.me();
+        console.log({me}, "!!!!!!!!!!!!!!!!!!!");
+        return me;
     },
 
-    setTokens: ({accessToken, refreshToken}: ITokens): void => {
+    async refresh(): Promise<void> {
+        const refreshToken = this.getRefreshToken();
+
+        if (refreshToken) {
+            const {data} = await axiosInstance.post<ITokens>(urls.auth.refresh,  {refreshToken});
+            this.setTokens(data);
+        }
+    },
+
+    setTokens({tokens: {accessToken, refreshToken}}: ITokens): void {
         localStorage.setItem(_accessToken, JSON.stringify(accessToken));
         localStorage.setItem(_refreshToken, JSON.stringify(refreshToken));
     },
 
-    getAccessToken: (): string => {
+    deleteTokens() {
+        localStorage.removeItem(_accessToken);
+        localStorage.removeItem(_refreshToken);
+    },
+
+    getAccessToken(): string {
         return localStorage.getItem(_accessToken) || "";
     },
 
-    getRefreshToken: (): string => {
+    getRefreshToken(): string {
         return localStorage.getItem(_refreshToken) || "";
     },
 };
 
-function setTokens({accessToken, refreshToken}: ITokens): void {
-    localStorage.setItem(_accessToken, JSON.stringify(accessToken));
-    localStorage.setItem(_refreshToken, JSON.stringify(refreshToken));
-}
+// function setTokens({accessToken, refreshToken}: ITokens): void {
+//     localStorage.setItem(_accessToken, JSON.stringify(accessToken));
+//     localStorage.setItem(_refreshToken, JSON.stringify(refreshToken));
+// }

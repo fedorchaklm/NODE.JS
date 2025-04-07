@@ -1,12 +1,12 @@
-import { NextFunction, Request, Response } from "express";
+import {NextFunction, Request, Response} from "express";
 
-import { RoleEnum } from "../enums/role.enum";
-import { StatusCodesEnum } from "../enums/status.codes.enum";
-import { TokenTypeEnum } from "../enums/token-type.enum";
-import { ApiError } from "../errors/api.error";
-import { ITokenPayload } from "../interfaces/token.interface";
-import { tokenService } from "../services/token.service";
-import { userService } from "../services/user.service";
+import {RoleEnum} from "../enums/role.enum";
+import {StatusCodesEnum} from "../enums/status.codes.enum";
+import {TokenTypeEnum} from "../enums/token-type.enum";
+import {ApiError} from "../errors/api.error";
+import {ITokenPayload} from "../interfaces/token.interface";
+import {tokenService} from "../services/token.service";
+import {userService} from "../services/user.service";
 
 class AuthMiddleware {
     public checkAccessToken = async (
@@ -16,7 +16,7 @@ class AuthMiddleware {
     ) => {
         try {
             const authorizationHeader = req.headers.authorization;
-
+            console.log({authorizationHeader});
             if (!authorizationHeader) {
                 throw new ApiError(
                     "No token provided",
@@ -113,7 +113,7 @@ class AuthMiddleware {
 
     public isAdmin(_: Request, res: Response, next: NextFunction) {
         try {
-            const { role } = res.locals.tokenPayload as ITokenPayload;
+            const {role} = res.locals.tokenPayload as ITokenPayload;
 
             if (role !== RoleEnum.ADMIN) {
                 throw new ApiError(

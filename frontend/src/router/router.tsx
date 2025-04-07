@@ -6,7 +6,7 @@ import { RegisterPage } from "../pages/register-page/RegisterPage";
 
 const router = createBrowserRouter([
     {path: '', element: <MainLayout/>, children: [
-            {index: true, element: <Navigate to={'pizzas'}/>},
+            {index: true, element: <Navigate to={'login'}/>},
             {path: 'pizzas', element: <PizzasPage/>},
             {path: 'register', element: <RegisterPage/>},
             {path: 'login', element: <LoginPage/>}
