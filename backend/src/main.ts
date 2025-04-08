@@ -1,16 +1,20 @@
 /*eslint-disable no-console */
 /*eslint-disable @typescript-eslint/no-unused-vars*/
-import express, { NextFunction, Request, Response } from "express";
+import express, {NextFunction, Request, Response} from "express";
 import mongoose from "mongoose";
+import cors from "cors";
 
-import { config } from "./config/config";
-import { ApiError } from "./errors/api.error";
-import { apiRouter } from "./routers/api.router";
+import {config} from "./config/config";
+import {ApiError} from "./errors/api.error";
+import {apiRouter} from "./routers/api.router";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({extended: true}));
+app.use(cors({
+    origin: ["http://localhost:3000"]
+}));
 
 app.use("/", apiRouter);
 app.use(
@@ -18,7 +22,7 @@ app.use(
     (err: ApiError, req: Request, res: Response, next: NextFunction) => {
         const status = err.status || 500;
         const message = err.message ?? "Something went wrong";
-        res.status(status).json({ status, message });
+        res.status(status).json({status, message});
     },
 );
 

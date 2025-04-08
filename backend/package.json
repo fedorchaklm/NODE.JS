@@ -37,6 +37,9 @@
     "rimraf": "^6.0.1",
     "tsc-watch": "^6.2.1",
     "tsx": "^4.19.3",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.2",
+    "dotenv": "^16.4.7",
+    "cors": "^2.8.5",
+    "@types/cors": "^2.8.17"
   }
 }

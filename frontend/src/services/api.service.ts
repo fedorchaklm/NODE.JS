@@ -4,7 +4,7 @@ import {urls} from "../constants/urls";
 import router from "../router/router";
 
 export const axiosInstance = axios.create({
-    "baseURL": "/api",
+    "baseURL": process.env.REACT_APP_BASE_URL,
 });
 
 let isRefreshing = false;
