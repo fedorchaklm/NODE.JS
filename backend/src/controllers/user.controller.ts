@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from "express";
+import {NextFunction, Request, Response} from "express";
 
-import { StatusCodesEnum } from "../enums/status.codes.enum";
-import { ApiError } from "../errors/api.error";
-import { IUser } from "../interfaces/user.interface";
-import { userService } from "../services/user.service";
+import {StatusCodesEnum} from "../enums/status.codes.enum";
+import {ApiError} from "../errors/api.error";
+import {IUser} from "../interfaces/user.interface";
+import {userService} from "../services/user.service";
 
 class UserController {
     public getAll = async (
@@ -25,7 +25,7 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const { id } = req.params;
+            const {id} = req.params;
             const user = await userService.getById(id);
             res.status(StatusCodesEnum.OK).json(user);
         } catch (e) {
@@ -52,7 +52,7 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const { id } = req.params;
+            const {id} = req.params;
             const user = await userService.updateById(id, req.body);
             res.status(StatusCodesEnum.OK).json(user);
         } catch (e) {
@@ -66,8 +66,8 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const { id: userId } = req.params;
-            const { userId: myId } = res.locals.tokenPayload;
+            const {id: userId} = req.params;
+            const {userId: myId} = res.locals.tokenPayload;
             if (userId === myId) {
                 throw new ApiError("Not permitted", StatusCodesEnum.FORBIDDEN);
             }
@@ -84,8 +84,8 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const { id: userId } = req.params;
-            const { userId: myId } = res.locals.tokenPayload;
+            const {id: userId} = req.params;
+            const {userId: myId} = res.locals.tokenPayload;
             if (userId === myId) {
                 throw new ApiError("Not permitted", StatusCodesEnum.FORBIDDEN);
             }
@@ -102,13 +102,29 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const { id } = req.params;
+            const {id} = req.params;
             await userService.deleteById(id);
             res.status(StatusCodesEnum.NO_CONTENT).end();
         } catch (e) {
             next(e);
         }
     };
+
+    public uploadAvatar = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const {id} = req.params;
+            await userService.getById(id);
+
+            if (!req.file) {
+                throw new ApiError("Not file uploaded", StatusCodesEnum.BAD_REQUEST)
+            }
+
+            const user = await userService.partialUpdateById(id, {avatar: req.file.path});
+            res.status(StatusCodesEnum.OK).json(user);
+        } catch (e) {
+            next(e);
+        }
+    }
 }
 
 export const userController = new UserController();

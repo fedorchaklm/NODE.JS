@@ -7,6 +7,7 @@ import cors from "cors";
 import {config} from "./config/config";
 import {ApiError} from "./errors/api.error";
 import {apiRouter} from "./routers/api.router";
+import path from "path";
 
 const app = express();
 
@@ -15,6 +16,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(cors({
     origin: ["http://localhost:3000"]
 }));
+app.use('/media', express.static(path.join(process.cwd(), "upload")));
 
 app.use("/", apiRouter);
 app.use(

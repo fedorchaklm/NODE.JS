@@ -2,6 +2,7 @@ import {model, Schema} from "mongoose";
 
 import {RoleEnum} from "../enums/role.enum";
 import {IUser} from "../interfaces/user.interface";
+import path from "path";
 
 const UserSchema = new Schema(
     {
@@ -16,6 +17,7 @@ const UserSchema = new Schema(
         name: {type: String, required: true},
         surname: {type: String, required: true},
         age: {type: String, required: true},
+        avatar: {type: String, default: "" },
         isDeleted: {type: Boolean, default: false},
         IsVerified: {type: Boolean, default: false},
         isActive: {type: Boolean, default: true},
@@ -27,6 +29,9 @@ const UserSchema = new Schema(
                 delete ret.password;
                 // ret.id = ret._id;
                 // delete ret._id;
+                if(ret.avatar) {
+                    ret.avatar = `media/${path.basename(ret.avatar)}`;
+                }
                 return ret;
             }
         }

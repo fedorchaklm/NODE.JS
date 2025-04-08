@@ -1,9 +1,10 @@
-import { Router } from "express";
+import {Router} from "express";
 
-import { userController } from "../controllers/user.controller";
-import { authMiddleware } from "../middlewares/auth.middleware";
-import { commonMiddleware } from "../middlewares/common.middleware";
-import { UserValidator } from "../validators/user.validator";
+import {userController} from "../controllers/user.controller";
+import {authMiddleware} from "../middlewares/auth.middleware";
+import {commonMiddleware} from "../middlewares/common.middleware";
+import {UserValidator} from "../validators/user.validator";
+import {upload} from "../config/multer.config";
 
 const router = Router();
 
@@ -44,5 +45,11 @@ router.delete(
     authMiddleware.checkAccessToken,
     userController.deleteById,
 );
+
+router.patch(
+    "/upload-avatar/:id",
+    commonMiddleware.isValidId("id"),
+    upload.single("avatar"),
+    userController.uploadAvatar);
 
 export const userRouter = router;
