@@ -44,7 +44,7 @@ class AuthService {
 
     public signIn = async (dto: IAuth) => {
         const user = await userRepository.findByEmail(dto.email);
-        console.log({user}, "!!!!!!!!!!!!!!!!!!!!!");
+        console.log('> signIn', {user});
         if (user === null) {
             throw new ApiError(
                 "Invalid email or password",

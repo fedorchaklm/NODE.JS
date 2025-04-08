@@ -19,13 +19,18 @@ export const authService = {
     },
 
     async login(user: IAuth): Promise<IUser> {
-        console.log({user}, "!!!!!!!!!!!!!!!!!!!!!!!");
-        const {data} = await axiosInstance.post<ITokens>(urls.auth.login, user);
-        console.log({data}, "!!!!!!!!!!!!!!!!!!!!!!!");
-        this.setTokens(data);
-        const {data: me} = await this.me();
-        console.log({me}, "!!!!!!!!!!!!!!!!!!!");
-        return me;
+        try {
+            console.log('> login', {user});
+            const {data} = await axiosInstance.post<ITokens>(urls.auth.login, user);
+            console.log('> login', {data});
+            this.setTokens(data);
+            const {data: me} = await this.me();
+            console.log('> login', {me});
+            return me;
+        } catch (e) {
+            console.log('> login', e);
+            throw e;
+        }
     },
 
     async refresh(): Promise<void> {
@@ -38,8 +43,8 @@ export const authService = {
     },
 
     setTokens({tokens: {accessToken, refreshToken}}: ITokens): void {
-        localStorage.setItem(_accessToken, JSON.stringify(accessToken));
-        localStorage.setItem(_refreshToken, JSON.stringify(refreshToken));
+        localStorage.setItem(_accessToken, accessToken);
+        localStorage.setItem(_refreshToken, refreshToken);
     },
 
     deleteTokens() {

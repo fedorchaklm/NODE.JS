@@ -14,6 +14,7 @@ const pizzaSliceInitialState: pizzaSlice = {
 const getAll = createAsyncThunk<Array<IPizza>, void>("pizzaSlice/getAll", async (_, thunkAPI) => {
     try {
         const {data} = await pizzaService.getAll();
+        console.log('> getAll', { data });
         return thunkAPI.fulfillWithValue(data);
     } catch (e) {
         return thunkAPI.rejectWithValue(e);

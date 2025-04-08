@@ -8,8 +8,9 @@ export const Pizzas = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        console.log('> send');
         dispatch(pizzaSliceActions.getAll());
-    }, [trigger]);
+    }, [trigger, dispatch]);
 
     return (
         <div>

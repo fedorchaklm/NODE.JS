@@ -25,9 +25,10 @@ class AuthController {
     public signIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userWithTokens = await authService.signIn(req.body);
-            console.log({userWithTokens}, "!!!!!!!!!!!!!!!");
+            console.log('> signIn', {userWithTokens});
             res.status(StatusCodesEnum.CREATED).json(userWithTokens);
         } catch (e) {
+            console.log('> signIn error', e);
             next(e);
         }
     };

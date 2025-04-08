@@ -12,7 +12,7 @@ type IWaitList = () => void;
 const waitList: IWaitList[] = [];
 
 axiosInstance.interceptors.request.use((request) => {
-    const accessToken = JSON.parse(authService.getAccessToken());
+    const accessToken = authService.getAccessToken();
     console.log({accessToken});
     if (accessToken) {
         request.headers.Authorization = `Bearer ` + accessToken;
