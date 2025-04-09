@@ -49,7 +49,9 @@ router.delete(
 router.patch(
     "/upload-avatar/:id",
     commonMiddleware.isValidId("id"),
+    authMiddleware.checkAccessToken,
     upload.single("avatar"),
+    commonMiddleware.isFileExists(),
     userController.uploadAvatar);
 
 export const userRouter = router;

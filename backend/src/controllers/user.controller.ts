@@ -112,15 +112,13 @@ class UserController {
 
     public uploadAvatar = async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const {id} = req.params;
-            await userService.getById(id);
+            const {userId} = req.res?.locals.tokenPayload;
+            // await userService.getById(id);
 
-            if (!req.file) {
-                throw new ApiError("Not file uploaded", StatusCodesEnum.BAD_REQUEST)
+            if (req.file) {
+                const user = await userService.partialUpdateById(userId, {avatar: req.file.path});
+                res.status(StatusCodesEnum.OK).json(user);
             }
-
-            const user = await userService.partialUpdateById(id, {avatar: req.file.path});
-            res.status(StatusCodesEnum.OK).json(user);
         } catch (e) {
             next(e);
         }
