@@ -1,4 +1,4 @@
-import {IBase} from "./base.interface";
+import { IBase } from "./base.interface";
 
 export interface IUser extends IBase {
     _id: string;
@@ -20,7 +20,7 @@ export interface IUserQuery {
     pageSize: number;
     page: number;
     search?: string;
-    orderBy?: string;
+    order?: string;
 }
 
 export type IUserCreateDTO = Pick<
