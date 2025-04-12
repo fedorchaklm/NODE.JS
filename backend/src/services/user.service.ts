@@ -1,15 +1,27 @@
 import { StatusCodesEnum } from "../enums/status.codes.enum";
 import { ApiError } from "../errors/api.error";
+import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
 import {
     IUser,
     IUserCreateDTO,
+    IUserQuery,
     IUserUpdateDTO,
 } from "../interfaces/user.interface";
 import { userRepository } from "../repositories/user.repository";
 
 class UserService {
-    public getAll = async (): Promise<Array<IUser> | null> => {
-        return await userRepository.getAll();
+    public getAll = async (
+        query: IUserQuery,
+    ): Promise<IPaginatedResponse<IUser>> => {
+        const [data, totalItems] = await userRepository.getAll(query);
+        const totalPages = Math.ceil(totalItems / query.pageSize);
+        return {
+            totalItems,
+            totalPages,
+            prevPage: !!(query.page - 1),
+            nextPage: query.page + 1 <= totalPages,
+            data,
+        };
     };
 
     public getById = async (id: string): Promise<IUser> => {

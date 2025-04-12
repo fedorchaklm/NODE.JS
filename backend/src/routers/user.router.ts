@@ -1,14 +1,18 @@
-import {Router} from "express";
+import { Router } from "express";
 
-import {userController} from "../controllers/user.controller";
-import {authMiddleware} from "../middlewares/auth.middleware";
-import {commonMiddleware} from "../middlewares/common.middleware";
-import {UserValidator} from "../validators/user.validator";
-import {upload} from "../config/multer.config";
+import { upload } from "../config/multer.config";
+import { userController } from "../controllers/user.controller";
+import { authMiddleware } from "../middlewares/auth.middleware";
+import { commonMiddleware } from "../middlewares/common.middleware";
+import { UserValidator } from "../validators/user.validator";
 
 const router = Router();
 
-router.get("/", userController.getAll);
+router.get(
+    "/",
+    commonMiddleware.query(UserValidator.query),
+    userController.getAll,
+);
 // router.post(
 //     "/",
 //     commonMiddleware.validateBody(UserValidator.create),
@@ -52,6 +56,7 @@ router.patch(
     authMiddleware.checkAccessToken,
     upload.single("avatar"),
     commonMiddleware.isFileExists(),
-    userController.uploadAvatar);
+    userController.uploadAvatar,
+);
 
 export const userRouter = router;

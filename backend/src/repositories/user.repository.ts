@@ -1,13 +1,18 @@
 import {
     IUser,
     IUserCreateDTO,
+    IUserQuery,
     IUserUpdateDTO,
 } from "../interfaces/user.interface";
 import { User } from "../models/user.model";
 
 class UserRepository {
-    public getAll = (): Promise<Array<IUser>> => {
-        return User.find();
+    public getAll = (query: IUserQuery): Promise<[Array<IUser>, number]> => {
+        const skip = query.pageSize * (query.page - 1);
+        return Promise.all([
+            User.find().limit(query.pageSize).skip(skip),
+            User.countDocuments(),
+        ]);
     };
 
     public getById = (id: string): Promise<IUser | null> => {

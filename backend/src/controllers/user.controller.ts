@@ -1,18 +1,20 @@
-import {NextFunction, Request, Response} from "express";
+import { NextFunction, Request, Response } from "express";
 
-import {StatusCodesEnum} from "../enums/status.codes.enum";
-import {ApiError} from "../errors/api.error";
-import {IUser} from "../interfaces/user.interface";
-import {userService} from "../services/user.service";
+import { StatusCodesEnum } from "../enums/status.codes.enum";
+import { ApiError } from "../errors/api.error";
+import { IPaginatedResponse } from "../interfaces/paginated-response.interface";
+import { IUser, IUserQuery } from "../interfaces/user.interface";
+import { userService } from "../services/user.service";
 
 class UserController {
     public getAll = async (
-        _: Request,
-        res: Response<Array<IUser> | null>,
+        req: Request,
+        res: Response<IPaginatedResponse<IUser> | null>,
         next: NextFunction,
     ) => {
         try {
-            const users = await userService.getAll();
+            const query = req.query as any as IUserQuery;
+            const users = await userService.getAll(query);
             res.status(StatusCodesEnum.OK).json(users);
         } catch (e) {
             next(e);
@@ -25,7 +27,7 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const user = await userService.getById(id);
             res.status(StatusCodesEnum.OK).json(user);
         } catch (e) {
@@ -52,7 +54,7 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             const user = await userService.updateById(id, req.body);
             res.status(StatusCodesEnum.OK).json(user);
         } catch (e) {
@@ -66,8 +68,8 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const {id: userId} = req.params;
-            const {userId: myId} = res.locals.tokenPayload;
+            const { id: userId } = req.params;
+            const { userId: myId } = res.locals.tokenPayload;
             if (userId === myId) {
                 throw new ApiError("Not permitted", StatusCodesEnum.FORBIDDEN);
             }
@@ -84,8 +86,8 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const {id: userId} = req.params;
-            const {userId: myId} = res.locals.tokenPayload;
+            const { id: userId } = req.params;
+            const { userId: myId } = res.locals.tokenPayload;
             if (userId === myId) {
                 throw new ApiError("Not permitted", StatusCodesEnum.FORBIDDEN);
             }
@@ -102,7 +104,7 @@ class UserController {
         next: NextFunction,
     ) => {
         try {
-            const {id} = req.params;
+            const { id } = req.params;
             await userService.deleteById(id);
             res.status(StatusCodesEnum.NO_CONTENT).end();
         } catch (e) {
@@ -110,19 +112,26 @@ class UserController {
         }
     };
 
-    public uploadAvatar = async (req: Request, res: Response, next: NextFunction) => {
+    public uploadAvatar = async (
+        req: Request,
+        res: Response,
+        next: NextFunction,
+    ) => {
         try {
-            const {userId} = req.res?.locals.tokenPayload;
+            // eslint-disable-next-line no-unsafe-optional-chaining
+            const { userId } = req.res?.locals.tokenPayload;
             // await userService.getById(id);
 
             if (req.file) {
-                const user = await userService.partialUpdateById(userId, {avatar: req.file.path});
+                const user = await userService.partialUpdateById(userId, {
+                    avatar: req.file.path,
+                });
                 res.status(StatusCodesEnum.OK).json(user);
             }
         } catch (e) {
             next(e);
         }
-    }
+    };
 }
 
 export const userController = new UserController();
