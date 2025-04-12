@@ -16,7 +16,8 @@ export const Header = () => {
         <div className={'header'}>
             {
                 me ?
-                    <p>{me.name}</p>
+                    <img style={{width: "50px", height: "30px"}} src={`${process.env.REACT_APP_BASE_URL}/${me.avatar}`}
+                         alt={`${me.name}`}></img>
                     :
                     <div>
                         <Link to={'login'}>Login</Link>

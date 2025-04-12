@@ -16,7 +16,7 @@ app.use(express.urlencoded({extended: true}));
 app.use(cors({
     origin: ["http://localhost:3000"]
 }));
-app.use('/media', express.static(path.join(process.cwd(), "upload")));
+app.use('/media', express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/", apiRouter);
 app.use(

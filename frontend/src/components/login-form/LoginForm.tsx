@@ -10,19 +10,19 @@ export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const customSubmit = (user: IAuth) => {
-        dispatch(authSliceActions.login({user}));
-        navigate("/pizzas");
-    }
-
-    // const customSubmit = async (user: IAuth) => {
-    //     console.log(user);
-    //     const {meta: {requestStatus}} = await dispatch(authSliceActions.login({user}));
-    //     console.log(requestStatus);
-    //     if (requestStatus === 'fulfilled') {
-    //         navigate('/pizzas')
-    //     }
+    // const customSubmit = (user: IAuth) => {
+    //     dispatch(authSliceActions.login({user}));
+    //     navigate("/pizzas");
     // }
+
+    const customSubmit = async (user: IAuth) => {
+        console.log(user);
+        const {meta: {requestStatus}} = await dispatch(authSliceActions.login({user}));
+        console.log(requestStatus);
+        if (requestStatus === 'fulfilled') {
+            navigate('/pizzas')
+        }
+    }
 
     return (
         <form onSubmit={handleSubmit(customSubmit)}>

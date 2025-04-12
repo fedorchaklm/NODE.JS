@@ -1,5 +1,6 @@
 const auth = '/auth'
 const pizzas = '/pizzas'
+const baseURL = process.env.REACT_APP_BASE_URL!;
 
 export const urls = {
     auth: {
@@ -8,5 +9,6 @@ export const urls = {
         refresh: `${auth}/refresh`,
         me: `${auth}/me`
     },
-    pizzas
+    pizzas,
+    baseURL
 }
