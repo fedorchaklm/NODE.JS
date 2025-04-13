@@ -11,7 +11,6 @@ class PizzaService {
         query: IPizzaQuery,
     ): Promise<IPaginatedResponse<IPizza>> => {
         const [data, totalItems] = await pizzaRepository.getAll(query);
-        console.log(">", { query, totalItems, pageSize: query.pageSize });
         const totalPages = Math.ceil(totalItems / query.pageSize);
         return {
             totalItems,
