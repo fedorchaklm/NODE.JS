@@ -7,7 +7,12 @@ import { PizzaValidator } from "../validators/pizza.validator";
 
 const router = Router();
 
-router.get("/", authMiddleware.checkAccessToken, pizzaController.getAll);
+router.get(
+    "/",
+    authMiddleware.checkAccessToken,
+    commonMiddleware.query(PizzaValidator.query),
+    pizzaController.getAll,
+);
 router.post(
     "/",
     authMiddleware.checkAccessToken,

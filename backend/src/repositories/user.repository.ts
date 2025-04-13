@@ -9,9 +9,52 @@ import {
 import { User } from "../models/user.model";
 
 class UserRepository {
-    public getAll = (query: IUserQuery): Promise<Array<any>> => {
-        // const skip = query.pageSize * (query.page - 1);
+    // use aggregate
+    // public getAll = (query: IUserQuery): Promise<Array<any>> => {
+    //     const filterObject: FilterQuery<IUser> = { isDeleted: false };
+    //
+    //     if (query.search) {
+    //         filterObject.$or = [
+    //             { name: { $regex: query.search, $options: "i" } },
+    //             { surname: { $regex: query.search, $options: "i" } },
+    //         ];
+    //     }
+    //
+    //     const orderObject: { [key: string]: 1 | -1 } = {};
+    //
+    //     if (query.order) {
+    //         if (query.order.startsWith("-")) {
+    //             orderObject[query.order.slice(1)] = -1;
+    //         } else {
+    //             orderObject[query.order] = 1;
+    //         }
+    //     }
+    //     // return User.find(filterObject).limit(query.pageSize).skip(skip);
+    //     return User.aggregate([
+    //         {
+    //             $match: filterObject,
+    //         },
+    //         {
+    //             $sort: orderObject,
+    //         },
+    //         {
+    //             $group: {
+    //                 _id: null,
+    //                 totalItems: { $sum: 1 },
+    //                 data: { $push: "$$ROOT" },
+    //             },
+    //         },
+    //         {
+    //             $project: { _id: 0 },
+    //         },
+    //     ]);
+    // };
+
+    public getAll = (query: IUserQuery): Promise<[Array<IUser>, number]> => {
+        const skip = query.pageSize * (query.page - 1);
         const filterObject: FilterQuery<IUser> = { isDeleted: false };
+
+        const orderObject: { [key: string]: 1 | -1 } = {};
 
         if (query.search) {
             filterObject.$or = [
@@ -20,33 +63,12 @@ class UserRepository {
             ];
         }
 
-        const orderObject: { [key: string]: 1 | -1 } = {};
-
-        if (query.order) {
-            if (query.order.startsWith("-")) {
-                orderObject[query.order.slice(1)] = -1;
-            } else {
-                orderObject[query.order] = 1;
-            }
-        }
-        // return User.find(filterObject).limit(query.pageSize).skip(skip);
-        return User.aggregate([
-            {
-                $match: filterObject,
-            },
-            {
-                $sort: orderObject,
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalItems: { $sum: 1 },
-                    data: { $push: "$$ROOT" },
-                },
-            },
-            {
-                $project: { _id: 0 },
-            },
+        return Promise.all([
+            User.find(filterObject, orderObject)
+                .limit(query.pageSize)
+                .skip(skip)
+                .sort(query.order),
+            User.find(filterObject, orderObject).countDocuments(),
         ]);
     };
 
