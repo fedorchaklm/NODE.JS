@@ -9,6 +9,13 @@ class TokenRepository {
     public findByParams = (params: Partial<IToken>) => {
         return Token.findOne(params);
     };
+
+    public deleteTokensBeforeDate = async (date: Date): Promise<number> => {
+        const result = await Token.deleteMany({
+            createdAt: { $lt: date },
+        });
+        return result.deletedCount;
+    };
 }
 
 export const tokenRepository = new TokenRepository();

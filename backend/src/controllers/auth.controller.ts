@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 import { StatusCodesEnum } from "../enums/status.codes.enum";
-import {ITokenPair, ITokenPayload} from "../interfaces/token.interface";
+import { ITokenPair, ITokenPayload } from "../interfaces/token.interface";
 import { IUser } from "../interfaces/user.interface";
 import { tokenRepository } from "../repositories/token.repository";
 import { authService } from "../services/auth.service";
@@ -25,10 +25,10 @@ class AuthController {
     public signIn = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const userWithTokens = await authService.signIn(req.body);
-            console.log('> signIn', {userWithTokens});
+            console.log("> signIn", { userWithTokens });
             res.status(StatusCodesEnum.CREATED).json(userWithTokens);
         } catch (e) {
-            console.log('> signIn error', e);
+            console.log("> signIn error", e);
             next(e);
         }
     };
@@ -36,7 +36,7 @@ class AuthController {
     public me = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const { userId } = res.locals.tokenPayload as ITokenPayload;
-            console.log({userId});
+            console.log({ userId });
             const user = await userService.getById(userId);
             res.status(StatusCodesEnum.OK).json(user);
         } catch (e) {
@@ -52,7 +52,7 @@ class AuthController {
                 ...tokens,
                 _userId: userId,
             });
-            res.status(StatusCodesEnum.OK).json({tokens});
+            res.status(StatusCodesEnum.OK).json({ tokens });
         } catch (e) {
             next(e);
         }

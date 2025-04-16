@@ -1,22 +1,25 @@
 /*eslint-disable no-console */
 /*eslint-disable @typescript-eslint/no-unused-vars*/
-import express, {NextFunction, Request, Response} from "express";
-import mongoose from "mongoose";
 import cors from "cors";
-
-import {config} from "./config/config";
-import {ApiError} from "./errors/api.error";
-import {apiRouter} from "./routers/api.router";
+import express, { NextFunction, Request, Response } from "express";
+import mongoose from "mongoose";
 import path from "path";
+
+import { config } from "./config/config";
+import { cronRunner } from "./crons";
+import { ApiError } from "./errors/api.error";
+import { apiRouter } from "./routers/api.router";
 
 const app = express();
 
 app.use(express.json());
-app.use(express.urlencoded({extended: true}));
-app.use(cors({
-    origin: ["http://localhost:3000"]
-}));
-app.use('/media', express.static(path.join(process.cwd(), "uploads")));
+app.use(express.urlencoded({ extended: true }));
+app.use(
+    cors({
+        origin: ["http://localhost:3000"],
+    }),
+);
+app.use("/media", express.static(path.join(process.cwd(), "uploads")));
 
 app.use("/", apiRouter);
 app.use(
@@ -24,7 +27,7 @@ app.use(
     (err: ApiError, req: Request, res: Response, next: NextFunction) => {
         const status = err.status || 500;
         const message = err.message ?? "Something went wrong";
-        res.status(status).json({status, message});
+        res.status(status).json({ status, message });
     },
 );
 
@@ -46,6 +49,7 @@ const dbConnection = async () => {
 const start = async () => {
     try {
         await dbConnection();
+        await cronRunner();
         app.listen(config.PORT, () => {
             console.log(`Server is running on http://localhost:${config.PORT}`);
         });
