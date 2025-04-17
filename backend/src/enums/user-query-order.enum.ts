@@ -1,4 +1,4 @@
 export enum UserQueryOrderEnum {
-    NAME = 'name',
-    AGE = 'age',
+    NAME = "name",
+    AGE = "age",
 }

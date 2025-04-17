@@ -24,4 +24,8 @@ export const emailConstants: Record<EmailEnum, EmailDataType> = {
         subject: "Recovery password",
         template: "recovery",
     },
+    [EmailEnum.SPAM]: {
+        subject: "Spam",
+        template: "spam",
+    },
 };
