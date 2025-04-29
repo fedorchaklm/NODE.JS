@@ -4,19 +4,22 @@ import cors from "cors";
 import express, { NextFunction, Request, Response } from "express";
 import mongoose from "mongoose";
 import path from "path";
+import swaggerUI from "swagger-ui-express";
 
 import { config } from "./config/config";
+import { swaggerDocument } from "./config/swagger.config";
 import { cronRunner } from "./crons";
 import { ApiError } from "./errors/api.error";
 import { apiRouter } from "./routers/api.router";
 
 const app = express();
 
+app.use("/docs", swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
     cors({
-        origin: ["http://localhost:3000"],
+        origin: ["http://localhost:3000", "http://localhost:7000"],
     }),
 );
 app.use("/media", express.static(path.join(process.cwd(), "uploads")));
